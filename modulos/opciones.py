@@ -230,13 +230,20 @@ def opciones_trans(puntos_fig=None):
                 else:
                     #rotacion["coordenada"]=(rotacion["coordenada"]["coordenadas"])   
                     #VERIFICA QUE LA COORDENADA SE ENCUENTRE EN LA FIGURA
+                    rotacion["coordenada"]=(rotacion["coordenada"]["coordenadas"])
+                    coordenada = True
+                    """
                     if rotacion["coordenada"]["coordenadas"] not in puntos_fig:
+                        
                         #SI NO, MANDA MENSAJE
                         print("EL PUNTO DE REFERENCIA NO PERTENECE A LA FIGURA")
                         continue
+                        
+                        pass
                     else:
                         rotacion["coordenada"]=(rotacion["coordenada"]["coordenadas"])
                         coordenada = True
+                    """
             while not grado:
                 print("INTRODUCE LOS GRADOS PARA ROTAR LA FIGURA")
                 try:

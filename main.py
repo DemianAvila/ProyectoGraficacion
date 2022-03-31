@@ -77,11 +77,13 @@ def main():
                 opt["coordenada_inicio"][1],
                 opt["coordenada_final"][0],
                 opt["coordenada_final"][1])
-                puntos=recta.puntos_recta()
+                puntos=[recta.get_cord_fin(), recta.get_cord_ini()]
+                print(puntos)
             #CREA UN OBJETO POLIGONO
             elif opt["opcion_dibujo"]==3:
                 poligono = Poligono(opt["aristas"])
-                puntos=poligono.puntos_figura()
+                puntos=poligono.get_aristas()
+                print(puntos)
         
         #SEGUNDO CICLO DE OPCIONES, LAS TRANSFORMACIONES
         if ciclo_opt==30:
@@ -139,15 +141,17 @@ def main():
                     recta.escalar(transformaciones["escala"])
                 #SI HAY TRASLACIONES
                 if transformaciones["traslado"]!=[0,0]:
-                    recta.trasladar(transformaciones["traslado"][0], transformaciones["traslado"][0])
+                    recta.trasladar(transformaciones["traslado"][0], transformaciones["traslado"][1])
                 #SI HAY ROTACIONES
                 if transformaciones["rotaciones"]!=False:
                     #POR CADA UNO DE LOS PUNTOS A ROTAR
                     for punto in transformaciones["rotaciones"]:
                         #ROTAR, CONVIERTE UN STRING A LISTA
-                        recta.rotar(list(map(lambda x: int(x.strip()) ,punto[1:-1].split(','))), 
+                        punto_list = list(map(lambda x: int(x.strip()) ,punto[1:-1].split(',')))
+                        recta.rotar(punto_list, 
                         transformaciones["rotaciones"][punto])
-                puntos= recta.puntos_recta()
+                puntos= [recta.get_cord_fin(), recta.get_cord_ini()]
+                print(puntos)
             #TRANSFORMACIONES PARA POLIGONO
             if opt["opcion_dibujo"]==3:
                 #SI HAY ESCALAMIENTOS
@@ -155,7 +159,7 @@ def main():
                     poligono.escalar(transformaciones["escala"])
                 #SI HAY TRASLACIONES
                 if transformaciones["traslado"]!=[0,0]:
-                    poligono.trasladar(transformaciones["traslado"][0], transformaciones["traslado"][0])
+                    poligono.trasladar(transformaciones["traslado"][0], transformaciones["traslado"][1])
                 #SI HAY ROTACIONES
                 if transformaciones["rotaciones"]!=False:
                     #POR CADA UNO DE LOS PUNTOS A ROTAR
@@ -163,16 +167,39 @@ def main():
                         #ROTAR, CONVIERTE UN STRING A LISTA
                         poligono.rotar(list(map(lambda x: int(x.strip()) ,punto[1:-1].split(','))), 
                         transformaciones["rotaciones"][punto])
-                puntos = poligono.puntos_figura()
+                puntos = poligono.get_aristas()
+                print(puntos)
          
         ######
         if ciclo_opt < 40:
             ciclo_opt+=1
         pantalla.fill(fondo)
 
-        for punto in puntos:
-            punto = rotacion_y(punto, 600)
-            pygame.draw.line(pantalla, verde, (punto[0],punto[1]), (punto[0],punto[1]), 1)
+        #ROTA LA PANTALLA
+        nvos_puntos = []
+        for index, punto in enumerate(puntos):
+            punto = nvos_puntos.append(rotacion_y(punto, 600))
+
+        #SI ES CIRCULO, PUNTA TODOS LOS PUNTOS
+        if opt["opcion_dibujo"]==1:
+            for index, punto in enumerate(nvos_puntos):
+                pygame.draw.line(pantalla, verde, (nvos_puntos[index][0],nvos_puntos[index][1]),
+                (nvos_puntos[index][0],nvos_puntos[index][1]), 1)
+        #SI ES LA RECTA, SOLO PUNTA AMBOS PUNTOS
+        if opt["opcion_dibujo"]==2:
+            pygame.draw.line(pantalla, verde, (nvos_puntos[0][0],nvos_puntos[0][1]),
+                (nvos_puntos[1][0],nvos_puntos[1][1]), 1)
+        #SI ES EL POLIGONO POR CADA PAR DE ARISTAS IMPRIME UNA RECTA
+        if opt["opcion_dibujo"]==3:
+            for index, punto in enumerate(nvos_puntos):
+                #PARA CADA PAR DE ARISTAS SALVO LA ULTIMA
+                if index<len(nvos_puntos)-1:
+                    pygame.draw.line(pantalla, verde, (nvos_puntos[index][0],nvos_puntos[index][1]),
+                        (nvos_puntos[index+1][0],nvos_puntos[index+1][1]), 1)
+                #PARA LA ULTIMA ARISTA, UNELA A LA PRIMERA
+                else:
+                    pygame.draw.line(pantalla, verde, (nvos_puntos[index][0],nvos_puntos[index][1]),
+                        (nvos_puntos[0][0],nvos_puntos[0][1]), 1)
         
         pygame.display.flip()
 
